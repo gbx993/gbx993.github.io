@@ -182,7 +182,7 @@ body {
   background: var(--body-bg-color);
   color: var(--text-color);
   font-family: Poppins, "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 16px;
+  font-size: 1em;
   line-height: 2;
   min-height: 100%;
   position: relative;
@@ -1563,7 +1563,7 @@ pre code {
 }
 .site-state-item-count {
   display: block;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: 600;
 }
 .site-state-item-name {
@@ -1605,7 +1605,7 @@ pre code {
 }
 .languages {
   display: inline-block;
-  font-size: 1.125em;
+  font-size: 1em;
   position: relative;
 }
 .languages .lang-select-label span {
@@ -1755,7 +1755,7 @@ pre code {
   }
 }
 .posts-collapse .post-content .collection-title {
-  font-size: 1.125em;
+  font-size: 1em;
   position: relative;
 }
 .posts-collapse .post-content .collection-title::before {
@@ -1852,7 +1852,7 @@ pre code {
 }
 @media (min-width: 1200px) {
   .post-body {
-    font-size: 1.125em;
+    font-size: 1em;
   }
 }
 @media (min-width: 992px) {
@@ -2000,7 +2000,7 @@ pre code {
   margin: 15px 0;
 }
 .posts-expand .post-header {
-  font-size: 1.125em;
+  font-size: 1em;
   margin-bottom: 60px;
   text-align: center;
 }
