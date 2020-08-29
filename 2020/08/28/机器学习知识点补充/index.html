@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.14.0/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"gbx993.github.io","root":"/","scheme":"Gemini","version":"8.0.0-rc.5","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+  </script>
+
+  <meta name="description" content="基础概念先验概率与后验概率条件概率（似然概率）  一个事情发生后，另一件事发生的概率 P(X|Y)表示Y发生的条件下，X发生的概率  先验概率  事情发生前的预判概率 可以是基于历史数据的统计，也可以是主观观点给出的 一般是单独事件发生的概率  后验概率  基于先验概率球的的反向条件概率，若P(X|Y)为正向，则P(Y|X)为反向  贝叶斯公式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习知识点补充">
+<meta property="og:url" content="https://gbx993.github.io/2020/08/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A1%A5%E5%85%85/index.html">
+<meta property="og:site_name" content="JWind_xyf">
+<meta property="og:description" content="基础概念先验概率与后验概率条件概率（似然概率）  一个事情发生后，另一件事发生的概率 P(X|Y)表示Y发生的条件下，X发生的概率  先验概率  事情发生前的预判概率 可以是基于历史数据的统计，也可以是主观观点给出的 一般是单独事件发生的概率  后验概率  基于先验概率球的的反向条件概率，若P(X|Y)为正向，则P(Y|X)为反向  贝叶斯公式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828231107358.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0pXaW5kX3h5Zg==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828230912187.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0pXaW5kX3h5Zg==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2020-08-28T14:58:38.000Z">
+<meta property="article:modified_time" content="2020-08-29T07:14:53.448Z">
+<meta property="article:author" content="Gbx">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200828231107358.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0pXaW5kX3h5Zg==,size_16,color_FFFFFF,t_70#pic_center">
+
+
+<link rel="canonical" href="https://gbx993.github.io/2020/08/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A1%A5%E5%85%85/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>机器学习知识点补充 | JWind_xyf</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">JWind_xyf</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">左肩是炽热理想，右肩有热爱坦荡</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%88%E9%AA%8C%E6%A6%82%E7%8E%87%E4%B8%8E%E5%90%8E%E9%AA%8C%E6%A6%82%E7%8E%87"><span class="nav-number">1.0.1.</span> <span class="nav-text">先验概率与后验概率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%81%8F%E5%B7%AE%E4%B8%8E%E6%96%B9%E5%B7%AE"><span class="nav-number">1.0.2.</span> <span class="nav-text">偏差与方差</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0%E3%80%81%E4%BB%A3%E4%BB%B7%E5%87%BD%E6%95%B0%E3%80%81%E7%9B%AE%E6%A0%87%E5%87%BD%E6%95%B0"><span class="nav-number">1.0.3.</span> <span class="nav-text">损失函数、代价函数、目标函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96%E6%96%B9%E6%B3%95"><span class="nav-number">1.0.4.</span> <span class="nav-text">正则化方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%88%A4%E5%88%AB%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.0.5.</span> <span class="nav-text">生成模型与判别模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E5%8C%96%E3%80%81%E5%BD%92%E4%B8%80%E5%8C%96%E3%80%81%E4%B8%AD%E5%BF%83%E5%8C%96"><span class="nav-number">1.0.6.</span> <span class="nav-text">标准化、归一化、中心化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%B8%8D%E5%B9%B3%E8%A1%A1%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3"><span class="nav-number">1.0.7.</span> <span class="nav-text">数据不平衡怎么解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A1%E9%87%8F%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8C%87%E6%A0%87"><span class="nav-number">1.0.8.</span> <span class="nav-text">衡量模型的指标</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92"><span class="nav-number">2.0.1.</span> <span class="nav-text">逻辑回归</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SVM"><span class="nav-number">2.0.2.</span> <span class="nav-text">SVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E6%A0%91"><span class="nav-number">2.0.3.</span> <span class="nav-text">决策树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Bagging%E5%92%8CBoosting"><span class="nav-number">2.0.4.</span> <span class="nav-text">Bagging和Boosting</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Adaboost-RF-GBDT-XGBoost"><span class="nav-number">2.0.5.</span> <span class="nav-text">Adaboost&#x2F;RF&#x2F;GBDT&#x2F;XGBoost</span></a></li></ol></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Gbx"
+      src="/images/Sek.jpg">
+  <p class="site-author-name" itemprop="name">Gbx</p>
+  <div class="site-description" itemprop="description">NOT UNTILL WE REACH VINLAND...</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/JWind_xyf" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;JWind_xyf" rel="noopener" target="_blank"><i class=" fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </section>
+        <div class="back-to-top animated">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gbx993.github.io/2020/08/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A1%A5%E5%85%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Sek.jpg">
+      <meta itemprop="name" content="Gbx">
+      <meta itemprop="description" content="NOT UNTILL WE REACH VINLAND...">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JWind_xyf">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习知识点补充
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-28 22:58:38" itemprop="dateCreated datePublished" datetime="2020-08-28T22:58:38+08:00">2020-08-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-08-29 15:14:53" itemprop="dateModified" datetime="2020-08-29T15:14:53+08:00">2020-08-29</time>
+      </span>
+
+  
+    <span id="/2020/08/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9F%A5%E8%AF%86%E7%82%B9%E8%A1%A5%E5%85%85/" class="post-meta-item leancloud_visitors" data-flag-title="机器学习知识点补充" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><h4 id="先验概率与后验概率"><a href="#先验概率与后验概率" class="headerlink" title="先验概率与后验概率"></a><a target="_blank" rel="noopener" href="https://github.com/DarLiner/Algorithm_Interview_Notes-Chinese/blob/master/A-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/A-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80.md"><em>先验概率与后验概率</em></a></h4><p><strong>条件概率（似然概率）</strong></p>
+<ul>
+<li>一个事情发生后，另一件事发生的概率</li>
+<li>P(X|Y)表示Y发生的条件下，X发生的概率</li>
+</ul>
+<p><strong>先验概率</strong></p>
+<ul>
+<li>事情发生前的预判概率</li>
+<li>可以是基于历史数据的<strong>统计</strong>，也可以是主观观点给出的</li>
+<li>一般是<strong>单独事件</strong>发生的概率</li>
+</ul>
+<p><strong>后验概率</strong></p>
+<ul>
+<li>基于先验概率球的的反向条件概率，若P(X|Y)为正向，则P(Y|X)为反向</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/jiangjiang_jian/article/details/81346797"><strong>贝叶斯公式</strong></a></p>
+<a id="more"></a>
+
+<h4 id="偏差与方差"><a href="#偏差与方差" class="headerlink" title="偏差与方差"></a><a target="_blank" rel="noopener" href="https://github.com/DarLiner/Algorithm_Interview_Notes-Chinese/blob/master/A-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/A-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80.md"><em>偏差与方差</em></a></h4><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20448464"><strong>概念</strong></a>：</p>
+<ul>
+<li>偏差是<strong>预测值的期望</strong>与<strong>真实值</strong>的差距，差距越大，越偏离真实数据</li>
+<li>方差是<strong>预测值</strong>与<strong>期望值</strong>的距离，距离越大，代表分布越离散</li>
+</ul>
+<p><strong>偏差与方差用于衡量模型泛化误差的两个方面</strong>：</p>
+<ul>
+<li>偏差用于描述模型的<strong>拟合</strong>能力</li>
+<li>方差用于描述模型的<strong>稳定性</strong></li>
+</ul>
+<p><strong>导致偏差和方差的原因</strong>：</p>
+<ul>
+<li>偏差通常是对学习算法做了错误的假设，比如模型<strong>复杂度不够</strong>，通常偏差可以在<strong>训练误差</strong>上体现</li>
+<li>方差通常是优于模型<strong>复杂度过高</strong>造成，导致过拟合，通常方差体现在<strong>测试误差</strong>上</li>
+</ul>
+<p><strong>深度学习中的偏差与方差</strong>：</p>
+<ul>
+<li>神经网络的学习能力很强，所以训练误差一般较小</li>
+<li>神经网络过拟合会导致测试误差偏大</li>
+<li>降低模型的泛化误差- &gt; 正则化方法</li>
+</ul>
+<h4 id="损失函数、代价函数、目标函数"><a href="#损失函数、代价函数、目标函数" class="headerlink" title="损失函数、代价函数、目标函数"></a>损失函数、代价函数、目标函数</h4><p><strong>损失函数</strong>：Loss Function（希望最小化）<br>在一个样本上的误差<br><strong>代价函数</strong>：Cost Function<br>整个training set中的误差平均，即损失函数的平均<br>任何能表示预测值与真实值的误差的函数都可<br><strong>目标函数</strong>：（最大化/最小化不一定）<br>最终需要优化的函数，包括经验风险（比如代价函数）与结构风险（比如担心过拟合，用于正则化的项）<br>**<em>梯度下降**</em>：<br>比如模型是h(θ)=θTx，优化θ至代价最小的一个方法是梯度下降<br>梯度下降指代价函数对θ求偏导</p>
+<h4 id="正则化方法"><a href="#正则化方法" class="headerlink" title="正则化方法"></a><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/569efedf6985"><em>正则化方法</em></a></h4><p>防止过拟合，提高泛化能力</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012162613/article/details/44261657"><strong>三类原始数据</strong></a><br>training data：计算梯度、更新权重<br>validation data：实际上作用是防止过拟合，确定early stopping的epoch大小、learning rate等<br>testing data：衡量模型的好坏</p>
+<p><strong>L1&amp;L2范数</strong></p>
+<p>通过修改代价函数来实现<br>L1和L2的区别：</p>
+<ul>
+<li>L1通过在原目标函数后加上所有特征系数的<strong>绝对值</strong>的和实现正则化</li>
+<li>L2通过在原目标函数后加上所有特征系数的<strong>平方和</strong>来实现正则化</li>
+</ul>
+<p>L1和L2的功能：</p>
+<ul>
+<li>L1更适合特征选择</li>
+<li>L2更适合防止模型过拟合</li>
+</ul>
+<p><strong>Dropout</strong><br>修改神经网络本身，随机删除隐层单元</p>
+<p><strong>数据集增广</strong></p>
+<h4 id="生成模型与判别模型"><a href="#生成模型与判别模型" class="headerlink" title="生成模型与判别模型"></a><a target="_blank" rel="noopener" href="https://github.com/DarLiner/Algorithm_Interview_Notes-Chinese/blob/master/A-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/A-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80.md"><em>生成模型与判别模型</em></a></h4><p><strong>监督学习的任务模型通常是一个决策函数或一个条件概率分布</strong>：</p>
+<ul>
+<li><strong>决策函数</strong>：输入X返回Y，Y再与一个阈值作比较，然后根据比较结果判别X的类别</li>
+<li><strong>条件概率分布</strong>：输入X，返回X属于每个类别的概率，概率最大的为X的类别</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/4ef549eb0ad4"><strong>监督学习模型可分为</strong></a>：</p>
+<ul>
+<li><strong>生成模型</strong>：学习X和Y的<strong>联合概率分布</strong>P(X,Y)，然后根据贝叶斯公式求得条件概率P(Y|X)</li>
+<li><strong>判别模型</strong>：直接学习<strong>条件概率分布</strong>P(Y|X)</li>
+</ul>
+<p><strong>常见生成模型与判别模型</strong>：</p>
+<ul>
+<li>生成模型：HMM、朴素贝叶斯</li>
+<li>判别模型：LR、SVM、CRF、KNN、一般的神经网络</li>
+</ul>
+<h4 id="标准化、归一化、中心化"><a href="#标准化、归一化、中心化" class="headerlink" title="标准化、归一化、中心化"></a><em>标准化、归一化、中心化</em></h4><ol>
+<li><strong>归一化</strong>normalization 有最大最小值归一、平均归一、非线性归一，作用是把数据压缩到[-1，1]（平均归一）或者[0，1]（最大最小归一）</li>
+<li><strong>标准化</strong>standardization不像归一化一样只依据最大值与最小值计算，它根据平均值与标准差计算z-score，与数据整体分布有关</li>
+<li><strong>中心化</strong>就是目标值就是原值减去平均值，操作之后数据的平均值为0</li>
+<li>标准化/中心化的作用：有些模型必须用标准化/归一化，如KNN因为要求欧式距离，如果有的值量级过大，就需要把它压缩到与其他特征可比。如SVM，如神经网络，如PCA，如梯度下降加快收敛</li>
+</ol>
+<h4 id="数据不平衡怎么解决"><a href="#数据不平衡怎么解决" class="headerlink" title="数据不平衡怎么解决"></a><em>数据不平衡怎么解决</em></h4><ol>
+<li>欠采样法</li>
+<li>过采样法</li>
+<li>阈值移动方法</li>
+</ol>
+<h4 id="衡量模型的指标"><a href="#衡量模型的指标" class="headerlink" title="衡量模型的指标"></a><em>衡量模型的指标</em></h4><ol>
+<li>回归任务常用<strong>均方误差</strong></li>
+<li>错误率（分类错误的样本数占样本总数的比例）、精确度（1-错误率）</li>
+<li>查准率（Precision）=TP/(TP+FP) 【分母是预测为1】 选出的瓜中好瓜占比高，一查一个准</li>
+<li>查全率（Recall）=TP/(TP+FN) 【分母是真实为1】尽可能把好瓜都选上，查得全 </li>
+<li>P-R图横轴查全率、纵轴查准率，比较两个模型得P-R，出发点是查准率查全率双高，比较他们的平衡点BEP（查准率=查全率的取值）。然而BEP还是更简化了，我们用F1（PR的调和平均），Fβ（PR的加权调和平均）                </li>
+<li>ROC曲线研究机器学习泛化性能<br>横轴：假正例率 FPR=FP/(FP+TN) 【分母是真实为0】 希望尽可能小<br>纵轴：真正例率 TPR=TP/(TP+FN) 【分母是真实为1】 希望尽可能大</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/FrankieHello/article/details/82024526/">RMSE（均方根误差）、MSE（均方误差）、MAE（平均绝对误差）、SD（标准差）</a></li>
+</ol>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><h4 id="逻辑回归"><a href="#逻辑回归" class="headerlink" title="逻辑回归"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42933718/article/details/88874376">逻辑回归</a></h4><p>逻辑回归是假设数据服从伯努利分布，极大化似然函数，利用梯度下降求解参数，从而完成二分类的模型</p>
+<h4 id="SVM"><a href="#SVM" class="headerlink" title="SVM"></a>SVM</h4><p>SVM是一种二分类模型，基于最大间隔找到最佳的超平面，距离超平面最近的点是支持向量。当特征线性不可分的时候，需要用到核函数特征映射到高维空间。</p>
+<p><strong>SVM的缺点</strong>：</p>
+<ol>
+<li>难以处理大量数据，因为SVM要借助存储高阶矩阵来计算，所以计算较慢，垃圾邮件分类一般不用SVM，用Naive Bayes或LR</li>
+<li>难以处理多分类问题，要考虑组合模型的方法</li>
+<li>没有好的方法选取核函数</li>
+</ol>
+<p><strong>核函数</strong></p>
+<p>核函本质是两函数的内积，映射数据到高维，有高斯核、线性核、多项式核、Sigmoid核等</p>
+<ol>
+<li>线性核用于线性可分的数据</li>
+<li>多项式核参数多，对大量级的幂数不适用</li>
+<li>高斯核可以映射数据到无穷维，只有一个参数，但可解释性差，容易过拟合，速度较慢</li>
+<li>Sigmoid核求的是全局最优值，有良好的泛化能力</li>
+</ol>
+<p>在实战中</p>
+<ul>
+<li>样本非常多/特征多：线性核（跑得快）</li>
+<li>样本多、特征少：高斯核</li>
+</ul>
+<h4 id="决策树"><a href="#决策树" class="headerlink" title="决策树"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/manduner/article/details/90516561">决策树</a></h4><p><img src="https://img-blog.csdnimg.cn/20200828231107358.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0pXaW5kX3h5Zg==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>决策树的训练由特征选择、树的生成、剪枝组成</p>
+<ol>
+<li><p>谈谈对决策树的理解？<br>决策树的训练目标是让模型的<strong>不确定性</strong>降低得<strong>越快</strong>越好，根据评价指标不同，决策树主要有ID3，C4.5，CART三种算法，ID3得评价指标是信息增益，C4.5是信息增益率，CART是基尼指数</p>
+</li>
+<li><p>信息增益与信息增益率？<br>首先要知道熵这个概念，熵是度量随机变量的不确定性的指标，当概率分布越均匀，熵越大，概率分布相同的情况下，取值越多，熵越大。其次要理解条件熵的概念，条件熵是在一定条件下，某个随机变量的不确定性。当熵与条件熵的概率由数据估计得到时，分别称为经验熵与经验条件熵</p>
+</li>
+</ol>
+<ul>
+<li>信息增益（也称互信息），是指集合D的经验熵H(D)与特征A给定条件下D的经验条件熵H(D|A)<strong>之差</strong></li>
+<li>ID3每次分叉选取最优特征时，会选取信息增益最高的特征来作为分裂特征，但这不一定就好，因为这样会偏爱取值数目多的特征</li>
+</ul>
+<ol start="3">
+<li>为什么C4.5采用信息增益率能解决ID3存在的问题？</li>
+</ol>
+<ul>
+<li>因为信息增益偏好可取值数目多的特征，比如将id作为分支条件，纯度一定是最大的，信息增益一定是最大的</li>
+<li>增益率=信息增益/IV，取值数目越多，IV越高</li>
+<li>增益率偏好可取值数目少的属性，因此C4.5使用一个启发式的方法：先从候选划分属性中找到信息增益高于平均水平的，再从中找增益率最高的</li>
+</ul>
+<ol start="4">
+<li><p>决策树出现过拟合的原因和解决方法？<br>Early Stopping（限制树的高度、节点数），剪枝</p>
+</li>
+<li><p>不同算法的树的结构有什么区别？<br>CART是二叉树，叶子节点数目比所有非叶子节点数目多1</p>
+<p> <strong><em>原因</em></strong></p>
+</li>
+</ol>
+<ul>
+<li><p>树的生成中没有进行剪枝，模型过于复杂</p>
+</li>
+<li><p>样本中有噪声数据，没有对噪声数据进行有效剔除</p>
+</li>
+<li><p>构建决策树过程中用了较多的输出变量</p>
+<p>  <strong><em>解决方法</em></strong></p>
+</li>
+<li><p>剪枝：预剪枝与后剪枝（一般用后剪枝）</p>
+</li>
+<li><p>K-folds交叉验证：将数据分为K份，每次把其中的1份作为测试集，K-1份作为训练集</p>
+</li>
+<li><p>减少特征：<br>  计算每个特征和响应变量的相关性，常见的相关系数是皮尔逊相关系数，将相关性较小的变量剔除<br>  基于决策树的特征筛选<br>  L1正则化选取特征</p>
+</li>
+</ul>
+<ol start="6">
+<li>剪枝</li>
+</ol>
+<ul>
+<li>预剪枝：在当前节点划分前，先进性估计，若当前节点的划分不能带来决策树泛化性能的提升，则停止划分并将当前节点标记为叶子节点</li>
+<li>后剪枝：是一种全局的优化方法，在决策树完全建立后再自下而上地剪枝，若将该节点对应的子树替换为叶子节点能提升决策树泛化性能，则替换</li>
+<li>参数：树的高度、叶子节点的数目、最大叶子节点数、限制不纯度等</li>
+</ul>
+<ol start="7">
+<li>DT和LR的区别？</li>
+</ol>
+<ul>
+<li>DT能处理缺失值的数据，LR则需要预处理</li>
+<li>DT对局部结构的分析优于LR，而LR注重全局拟合，DT一旦分层，就与其他节点无法联系了，忽视数据间的相关性</li>
+<li>LR对极值比较敏感，容易受极端值影响</li>
+<li>当数据量很大时，LR速度很慢，DT较快</li>
+</ul>
+<h4 id="Bagging和Boosting"><a href="#Bagging和Boosting" class="headerlink" title="Bagging和Boosting"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/amy_1217/article/details/101500643">Bagging和Boosting</a></h4><p>Bagging流程：</p>
+<ol>
+<li>用Boostrap选取n个训练样本，选取k轮</li>
+<li>分别训练k个模型</li>
+<li>综合每个模型的结果</li>
+</ol>
+<p>Boosting流程：</p>
+<ol>
+<li>建立对训练样本的权重</li>
+<li>每轮迭代对训练样本权重进行改变</li>
+<li>综合每个基分类器的结果</li>
+</ol>
+<p>区别：</p>
+<ol>
+<li><p>在样本选择上：<br>Boosting每一轮的训练集是不变的，改变的只是每一个样本的权重；<br>Bagging采用的是Bootstrap随机有放回抽样。</p>
+</li>
+<li><p>在样本权重上：<br>Boosting根据错误率调整样本权重，错误率越大的样本权重越大；<br>Bagging使用的是均匀取样，每个样本权重相等。</p>
+</li>
+<li><p>在并行计算上：<br>Boosting各个预测函数必须按顺序迭代生成；<br>Bagging各个预测函数可以并行生成。</p>
+</li>
+<li><p>在预测函数上：<br>Boosting中误差越小的预测函数其权重越大；<br>Bagging所有的预测函数的权重相等。</p>
+</li>
+</ol>
+<h4 id="Adaboost-RF-GBDT-XGBoost"><a href="#Adaboost-RF-GBDT-XGBoost" class="headerlink" title="Adaboost/RF/GBDT/XGBoost"></a>Adaboost/RF/GBDT/XGBoost</h4><p>Adaboost</p>
+<p><img src="https://img-blog.csdnimg.cn/20200828230912187.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0pXaW5kX3h5Zg==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>Adaboost的优点</strong>：</p>
+<ol>
+<li>Adaboost是一种有很高精度的分类器；</li>
+<li>可以使用各种方法构建子分类器,Adaboost算法提供的是框架；</li>
+<li>当使用简单分类器时,计算出的结果是可以理解的,而且弱分类器构造极其简单；</li>
+<li>简单,不用做特征筛选；</li>
+<li>不用担心overfitting</li>
+</ol>
+<p><strong>随机森林的优点</strong>：</p>
+<ol>
+<li>对于很多种资料，它可以产生高准确度的分类器；</li>
+<li>它可以处理大量的输入变量；</li>
+<li>它可以在决定类别时，评估变量的重要性；</li>
+<li>在建造森林时，它可以在内部对于一般化后的误差产生不偏差的估计</li>
+</ol>
+<p><strong>Adaboost与RF相同之处</strong>：</p>
+<ol>
+<li>二者都是要训练很多棵决策树；</li>
+<li>二者都是bootsrap自助法选取样本。</li>
+</ol>
+<p><strong>XGBoost与GBDT的区别</strong>：<br>GBDT算法只利用了一阶的导数信息，XGBoost对损失函数做了二阶的泰勒展开，并在目标函数之外加入了正则项对整体求最优解，用以权衡目标函数的下降和模型的复杂程度，避免过拟合。所以不考虑细节方面，两者最大的不同就是目标函数的定义</p>
+<p><strong>GBDT与Adboost的区别</strong>：<br>最主要的区别在于两者如何识别模型。Adaboost用错分数据点来识别问题，通过调整错分数据点的权重来改进模型。GBDT通过负梯度来识别问题，通过计算负梯度来改进模型</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/21/%E5%BE%AE%E4%BF%A1%E8%81%8A%E5%A4%A9%E8%AE%B0%E5%BD%95%E5%88%86%E6%9E%90%EF%BC%88HB-to-RM%EF%BC%89/" rel="prev" title="微信聊天记录分析（HB to RM）">
+                  <i class="fa fa-chevron-left"></i> 微信聊天记录分析（HB to RM）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+  
+  
+  
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Gbx</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">21k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">36 分钟</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      const visitors = document.querySelector('.leancloud_visitors');
+      const url = decodeURI(visitors.id);
+      const title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            const counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      const visitors = document.querySelectorAll('.leancloud_visitors');
+      const entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            const target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    const { app_id, app_key, server_url } = {"enable":true,"app_id":"ufoGAFOwGmpUqXdwxas4IMVB-MdYXbMMI","app_key":"pVwQP1FNzOyUJMAY1vYuo3VD","server_url":null,"security":true};
+    function fetchData(api_server) {
+      const Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    const api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+  
+
+  
+
+  
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+</body>
+</html>
